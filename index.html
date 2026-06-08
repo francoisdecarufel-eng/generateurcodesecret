@@ -390,7 +390,7 @@ DÉFINITION DU JEU ATTENDU (CODE SECRET) :
 ${customDetails ? `- Consignes spécifiques : ${customDetails}` : ''}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-EXIGENCE ABSOLUE — SORTIE EN DEUX ONGLETS PÉDAGOGIQUES
+EXIGENCE ABSOLUE — UN SEUL FICHIER HTML AVEC DEUX ONGLETS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Génère UN SEUL ET UNIQUE FICHIER HTML complet et autonome (utilisant Tailwind CSS via CDN et JavaScript intégré). Tu auras besoin d'importer une librairie comme html2canvas via CDN (\`https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js\`) pour l'exportation d'images.
 INTERDICTION ABSOLUE de générer du code SVG brut, des images séparées ou de scinder en plusieurs blocs. Je veux une application web complète, esthétique et fonctionnelle.
@@ -408,6 +408,7 @@ L'outil doit obligatoirement proposer deux options de téléchargement distincte
 
 CRITÈRES CRITIQUES DE L'EXPORTATION PNG (ANTI-FLOU) :
 - Configuration de capture html2canvas : Utilise STRICTEMENT \`scale: 3\` ou \`scale: 4\` minimum pour un rendu ultra-net équivalent à 300-400 DPI.
+- Traitement d'image professionnel au moment de la capture : lors du clic sur le bouton de téléchargement PNG, l'application doit convertir chaque pixel du canvas de rendu en niveaux de gris purs (Noir & Blanc strict) grâce à un algorithme de traitement de luminance standard (en manipulant \`getImageData\`). Cela garantit un export 100 % monochrome de très haute qualité, éliminant toute couleur (y compris celle des émojis) tout en préservant une netteté vectorielle parfaite pour les documents imprimés ou les projections.
 - INTERDICTION de filtre CSS global (\`filter: grayscale()\` ou \`blur()\` ou \`brightness()\`) sur le conteneur à capturer (les filtres ne doivent s'appliquer qu'à des micro-éléments isolés, sous peine de rendre l'image floue à l'export).
 - Le texte doit rester vectoriel et DOM HTML avant la capture.
 - Optimise la netteté des polices dans la feuille de style avec :
