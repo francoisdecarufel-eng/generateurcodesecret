@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générateur de Requêtes - Code Secret Pédagogique V8</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #fafbfd;
+        }
+        .title-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        /* Custom transitions & effects */
+        .card-shadow {
+            box-shadow: 0 4px 20px -2px rgba(148, 163, 184, 0.08), 0 2px 8px -1px rgba(148, 163, 184, 0.04);
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f8fafc;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 99px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Header de l'Application -->
+    <header class="bg-white border-b border-slate-100 sticky top-0 z-50 px-8 py-5">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+                <div class="bg-indigo-600 text-white p-3 rounded-2xl shadow-md shadow-indigo-100">
+                    <i data-lucide="sparkles" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-950 title-font tracking-tight">
+                        L'Atelier du Code Secret
+                    </h1>
+                    <p class="text-xs text-slate-400 mt-0.5">Générateur de Prompts : App HTML 2 Onglets (Impression & TNI)</p>
+                </div>
+            </div>
+            <div>
+                <button onclick="resetAll()" class="text-xs font-semibold text-slate-400 hover:text-red-500 transition flex items-center gap-1.5 px-3 py-2 rounded-xl hover:bg-slate-50">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    Réinitialiser tout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Zone principale -->
+    <main class="max-w-6xl mx-auto px-6 py-10 flex-grow w-full space-y-10">
+        
+        <!-- Formulaire de Configuration Aéré -->
+        <div class="space-y-8">
+            
+            <!-- SECTION 1 & 2 : Général & Univers -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Bloc Général -->
+                <div class="bg-white rounded-3xl border border-slate-100 p-8 card-shadow space-y-5">
+                    <div class="flex items-center gap-2 pb-2 border-b border-slate-50">
+                        <i data-lucide="book-open" class="w-5 h-5 text-indigo-500"></i>
+                        <h2 class="font-bold text-slate-800 text-sm tracking-wider uppercase">1. En-tête de la fiche</h2>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Titre de l'exercice</label>
+                            <input type="text" id="act-title" placeholder="Ex: MESSAGE SECRET - LE JARDIN DE PRINTEMPS" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Période / Semaine</label>
+                            <input type="text" id="act-week" placeholder="Ex: Semaine 12, Spécial Avril" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bloc Thème -->
+                <div class="bg-white rounded-3xl border border-slate-100 p-8 card-shadow space-y-5">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-50">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="palette" class="w-5 h-5 text-indigo-500"></i>
+                            <h2 class="font-bold text-slate-800 text-sm tracking-wider uppercase">2. Thème & Univers</h2>
+                        </div>
+                        <label class="flex items-center gap-2 cursor-pointer bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100 hover:bg-indigo-50/50 transition">
+                            <input type="checkbox" id="ai-theme" class="rounded text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-[11px] font-bold text-indigo-900">Laisser l'IA décider</span>
+                        </label>
+                    </div>
+
+                    <div class="space-y-4" id="theme-fields-container">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase">Choisir un thème</label>
+                            <select id="act-theme-select" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition">
+                                <option value="">-- Sélectionner un univers --</option>
+                                <option value="Printemps & Papillons">Printemps & Papillons</option>
+                                <option value="Chasse au Trésor des Pirates">Chasse au Trésor des Pirates</option>
+                                <option value="Mission Secrète d'Espionnage">Mission Secrète d'Espionnage</option>
+                                <option value="Laboratoire de Sciences Fou">Laboratoire de Sciences Fou</option>
+                                <option value="Aventure Spatiale Intergalactique">Aventure Spatiale Intergalactique</option>
+                                <option value="Sorcellerie et Magiciens">Sorcellerie et Magiciens</option>
+                                <option value="Autre">✨ Autre (préciser)...</option>
+                            </select>
+                        </div>
+                        
+                        <div id="custom-theme-container" class="hidden animate-fade-in">
+                            <label class="block text-xs font-semibold text-indigo-600 mb-1.5 uppercase">Votre thème personnalisé</label>
+                            <input type="text" id="act-theme-custom" placeholder="Écrivez votre propre univers ici..." class="w-full bg-white border-2 border-indigo-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-400 transition shadow-sm">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- SECTION 3, 4 & 5 : Caractéristiques du Code -->
+            <div class="bg-white rounded-3xl border border-slate-100 p-8 card-shadow space-y-6">
+                <div class="flex items-center gap-2 pb-2 border-b border-slate-50">
+                    <i data-lucide="fingerprint" class="w-5 h-5 text-indigo-500"></i>
+                    <h2 class="font-bold text-slate-800 text-sm tracking-wider uppercase">3. Paramètres & Mécanique du code</h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-xs font-semibold text-slate-500 uppercase">Type de code</label>
+                            <label class="text-[10px] text-indigo-600 font-bold flex items-center gap-1">
+                                <input type="checkbox" id="ai-code-type" class="rounded"> Auto
+                            </label>
+                        </div>
+                        <select id="code-type" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                            <option value="">-- Sélectionner --</option>
+                            <option value="Chiffres">Chiffres</option>
+                            <option value="Couleurs">Couleurs</option>
+                            <option value="Symboles">Symboles</option>
+                            <option value="Lettres">Lettres</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-xs font-semibold text-slate-500 uppercase">Longueur du code</label>
+                            <label class="text-[10px] text-indigo-600 font-bold flex items-center gap-1">
+                                <input type="checkbox" id="ai-code-length" class="rounded"> Auto
+                            </label>
+                        </div>
+                        <select id="code-length" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                            <option value="">-- Sélectionner --</option>
+                            <option value="3 mots mystères distincts">3 mots mystères</option>
+                            <option value="4 éléments à déchiffrer">4 éléments</option>
+                            <option value="5 éléments à déchiffrer">5 éléments</option>
+                            <option value="Une phrase complète de 5 à 6 mots">Phrase complète</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-xs font-semibold text-slate-500 uppercase">Difficulté</label>
+                            <label class="text-[10px] text-indigo-600 font-bold flex items-center gap-1">
+                                <input type="checkbox" id="ai-difficulty" class="rounded"> Auto
+                            </label>
+                        </div>
+                        <select id="difficulty" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                            <option value="">-- Sélectionner --</option>
+                            <option value="Très facile (Primaire débutant)">Très facile</option>
+                            <option value="Facile (Éliminations simples)">Facile</option>
+                            <option value="Moyen (Croisement d'indices)">Moyen</option>
+                            <option value="Expert (Plusieurs niveaux de déductions)">Expert</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION 8, 10, 11 & 12 : Options Pédagogiques -->
+            <div class="bg-white rounded-3xl border border-slate-100 p-8 card-shadow space-y-6">
+                <div class="flex items-center gap-2 pb-2 border-b border-slate-50">
+                    <i data-lucide="graduation-cap" class="w-5 h-5 text-indigo-500"></i>
+                    <h2 class="font-bold text-slate-800 text-sm tracking-wider uppercase">4. Objectifs & Support Pédagogiques</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-xs font-semibold text-slate-500 uppercase">Indices & Méthode</label>
+                            <label class="text-[10px] text-indigo-600 font-bold flex items-center gap-1">
+                                <input type="checkbox" id="ai-method" class="rounded"> Auto
+                            </label>
+                        </div>
+                        <select id="deduction-method" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                            <option value="">-- Sélectionner la méthode --</option>
+                            <option value="Correspondance directe (Chiffre -> Lettre ou Symbole)">Correspondance Directe</option>
+                            <option value="Élimination par indices d'exclusion progressive">Élimination Progressive</option>
+                            <option value="Logique croisée complexe">Logique Croisée</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-xs font-semibold text-slate-500 uppercase">Support de réflexion élève</label>
+                            <label class="text-[10px] text-indigo-600 font-bold flex items-center gap-1">
+                                <input type="checkbox" id="ai-reflection" class="rounded"> Auto
+                            </label>
+                        </div>
+                        <select id="reflection-table" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                            <option value="">-- Sélectionner le support --</option>
+                            <option value="Grille de décodage A-Z et mots à remplir (Style Cahier)">Grille A-Z Ordonnée + Cases</option>
+                            <option value="Tableau d'élimination binaire (Vrai / Faux) à cocher">Tableau Vrai / Faux</option>
+                            <option value="Zone de brouillon encadrée">Zone de Brouillon Libre</option>
+                            <option value="Aucun support, réflexion mentale directe">Aucun</option>
+                        </select>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-xs font-semibold text-slate-500 uppercase">Nombre d'indices requis</label>
+                            <label class="text-[10px] text-indigo-600 font-bold flex items-center gap-1">
+                                <input type="checkbox" id="ai-clues" class="rounded"> Auto
+                            </label>
+                        </div>
+                        <select id="clues-count" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20">
+                            <option value="">-- Sélectionner le nombre --</option>
+                            <option value="Grille de décodage complète + 3 mots">Grille complète + Mots</option>
+                            <option value="3 à 5 indices de logique">3 à 5 indices</option>
+                            <option value="6 à 8 indices d'élimination">6 à 8 indices</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <div class="pt-4 space-y-2">
+                    <label class="block text-xs font-semibold text-slate-500 uppercase">Indications / Consignes ou contraintes libres supplémentaires (Optionnel)</label>
+                    <textarea id="custom-details" rows="2" placeholder="Ex: Ajouter une petite illustration en CSS, faire un tableau de décodage des symboles..." class="w-full bg-slate-50/50 border border-slate-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Grand Bouton Convivial de Génération -->
+        <div class="flex justify-center pt-4">
+            <button onclick="generateAndReveal()" class="bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-extrabold text-base px-8 py-4.5 rounded-2xl transition duration-150 flex items-center gap-3 shadow-lg shadow-indigo-100 hover:shadow-xl active:scale-[0.98]">
+                <i data-lucide="wand-2" class="w-5 h-5"></i>
+                <span>Générer la Super Requête de l'IA</span>
+            </button>
+        </div>
+
+        <!-- ZONE DE SORTIE : LA BOÎTE NOIRE (Masquée au démarrage) -->
+        <div id="output-box-container" class="hidden animate-fade-in space-y-4">
+            <div class="bg-slate-900 rounded-3xl border border-slate-800 p-8 shadow-2xl space-y-6">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-800 pb-5">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-emerald-500/10 text-emerald-400 p-2 rounded-xl">
+                            <i data-lucide="terminal" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-white title-font text-base">Votre Requête Finale Prête à l'Emploi</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Copiez-collez ce prompt dans votre IA (ChatGPT, Claude...) pour générer UNE SEULE APPLICATION HTML à deux onglets.</p>
+                        </div>
+                    </div>
+                    
+                    <button onclick="copyMasterPrompt()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-2xl text-xs font-bold transition flex items-center gap-2 self-start sm:self-auto shadow-md shadow-indigo-900/30">
+                        <i data-lucide="copy" class="w-4 h-4" id="btn-copy-icon"></i>
+                        <span id="btn-copy-text">Copier la Requête</span>
+                    </button>
+                </div>
+
+                <div class="relative">
+                    <textarea id="prompt-output" readonly rows="20" class="w-full bg-slate-950 text-indigo-200 font-mono text-xs p-6 rounded-2xl focus:outline-none resize-none border border-slate-850 leading-relaxed custom-scrollbar"></textarea>
+                </div>
+
+                <!-- Indicateur de succès et étape suivante -->
+                <div class="flex items-start gap-3 bg-indigo-950/40 border border-indigo-900/40 p-4.5 rounded-2xl text-xs text-indigo-200 leading-relaxed">
+                    <i data-lucide="info" class="w-4 h-4 text-indigo-400 shrink-0 mt-0.5"></i>
+                    <div>
+                        <strong>Mission accomplie :</strong> Le prompt interdit formellement la création de code SVG ou de fichiers séparés. L'IA va créer <strong>un seul et magnifique fichier HTML</strong> contenant les deux onglets (Fiche Imprimable + App TNI interactive).
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer de l'Application -->
+    <footer class="bg-white border-t border-slate-100 py-6 px-8 text-center text-xs text-slate-400 mt-12">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <span class="font-semibold text-slate-500">L'Atelier du Code Secret — Version 8.0 (100% Web)</span>
+            <span>Conçu pour les écoles primaires et l'édition professionnelle</span>
+        </div>
+    </footer>
+
+    <!-- Scripts de Logique de l'Application -->
+    <script>
+        const getVal = (id) => {
+            const el = document.getElementById(id);
+            return (el && el.value.trim()) ? el.value.trim() : "";
+        };
+
+        const isChecked = (id) => {
+            const el = document.getElementById(id);
+            return el ? el.checked : false;
+        };
+
+        const themeSelect = document.getElementById('act-theme-select');
+        const customThemeContainer = document.getElementById('custom-theme-container');
+        
+        if (themeSelect) {
+            themeSelect.addEventListener('change', (e) => {
+                if (e.target.value === 'Autre') {
+                    if (customThemeContainer) customThemeContainer.classList.remove('hidden');
+                } else {
+                    if (customThemeContainer) customThemeContainer.classList.add('hidden');
+                }
+                triggerPromptRebuild();
+            });
+        }
+
+        function generateMasterPrompt() {
+            const title = getVal('act-title') || "[Saisir ou laisser vide]";
+            const week = getVal('act-week') || "[Saisir ou laisser vide]";
+            
+            const themeAuto = isChecked('ai-theme');
+            let themeSelection = "";
+            if (themeSelect && themeSelect.value === 'Autre') {
+                themeSelection = getVal('act-theme-custom');
+            } else {
+                themeSelection = getVal('act-theme-select');
+            }
+            const theme = themeAuto ? "Laissez l'IA choisir un univers hautement stimulant pour des enfants du primaire" : (themeSelection || "Sujet généraliste amusant");
+
+            const codeTypeAuto = isChecked('ai-code-type');
+            const codeType = codeTypeAuto ? "Laisser l'IA décider de la mécanique de code la plus adaptée" : (getVal('code-type') || "Chiffres, Lettres, Couleurs ou Symboles");
+
+            const codeLengthAuto = isChecked('ai-code-length');
+            const codeLength = codeLengthAuto ? "Laisser l'IA décider de la longueur de code idéale pour l'âge moyen" : (getVal('code-length') || "3 mots mystères distincts");
+
+            const diffAuto = isChecked('ai-difficulty');
+            const diff = diffAuto ? "Laisser l'IA ajuster la complexité logicielle de façon équilibrée" : (getVal('difficulty') || "Facile");
+
+            const methodAuto = isChecked('ai-method');
+            const method = methodAuto ? "Laisser l'IA adapter la méthode déductive logique" : (getVal('deduction-method') || "Correspondance directe ou logique déductive");
+
+            const reflectionAuto = isChecked('ai-reflection');
+            const reflection = reflectionAuto ? "Laisser l'IA structurer une zone de brouillon ingénieuse" : (getVal('reflection-table') || "Grille de décodage ou tableau d'élimination");
+
+            const cluesAuto = isChecked('ai-clues');
+            const cluesCount = cluesAuto ? "Laisser l'IA définir le nombre d'indices suffisant pour garantir une unique solution" : (getVal('clues-count') || "3 à 5 indices de logique");
+
+            const customDetails = getVal('custom-details');
+
+            return `RÔLE & MISSION PROFESSIONNELLE :
+Tu es un développeur web pédagogique d'excellence et un expert en ingénierie de jeux scolaires pour l'édition jeunesse.
+
+DÉFINITION DU JEU ATTENDU (CODE SECRET) :
+- Jeu de logique dans lequel un code doit être découvert à partir d'indices.
+- Objectif : Trouver une combinaison cachée.
+- Types de codes autorisés : Chiffres, Couleurs, Symboles, Lettres.
+- Exemples d'indices : "Un symbole est bien placé", "Deux chiffres sont présents mais mal placés", "Aucun élément n'est correct".
+- Compétences mobilisées : Déduction, Analyse, Logique.
+
+--- CAHIER DES CHARGES DE L'ACTIVITÉ ---
+- Titre de la Fiche d'Exercice : ${title}
+- Période / Semaine : ${week}
+- Thématique visuelle : ${theme}
+- Type de Mécanique : ${codeType}
+- Format & Longueur de la solution : ${codeLength}
+- Niveau de Difficulté : ${diff}
+- Méthode Déductive : ${method}
+- Support de Réflexion : ${reflection}
+- Nombre d'indices : ${cluesCount}
+${customDetails ? `- Consignes spécifiques : ${customDetails}` : ''}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EXIGENCE ABSOLUE — SORTIE EN DEUX ONGLETS PÉDAGOGIQUES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Génère UN SEUL ET UNIQUE FICHIER HTML complet et autonome (utilisant Tailwind CSS via CDN et JavaScript intégré). Tu auras besoin d'importer une librairie comme html2canvas via CDN (\`https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js\`) pour l'exportation d'images.
+INTERDICTION ABSOLUE de générer du code SVG brut, des images séparées ou de scinder en plusieurs blocs. Je veux une application web complète, esthétique et fonctionnelle.
+Cette application HTML DOIT avoir DEUX ONGLETS (Tab 1, Tab 2) de navigation en haut de page.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ONGLET 1 — VERSION ÉLÈVE (IMPRIMABLE NOIR & BLANC ET EXPORTABLE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Cet onglet contient la fiche élève, conçue avec la beauté et la structure d'une page de cahier d'édition scolaire (ex: tableaux de décodage A-Z propres, cases de réponses encadrées, tirets avec lettres, etc.), entièrement codée en HTML/CSS.
+- Style graphique : Noir et blanc, bordures nettes (border-2 border-black), polices lisibles, structuré de manière très aérée.
+
+L'outil doit obligatoirement proposer deux options de téléchargement distinctes pour le résultat final, avec le système affichant deux boutons distincts, parfaitement visibles et stylisés en haut de l'onglet :
+1. "📄 Télécharger PDF" : Déclenche l'impression optimisée pour un format imprimable A4 (mise en page professionnelle, via \`window.print()\` ou autre).
+2. "🖼️ Télécharger PNG (image)" : Export en image haute résolution de la zone de la fiche (fond propre et lisible, format adapté au copier-coller dans PowerPoint, Word ou TNI, par exemple en utilisant la librairie \`html2canvas\`).
+
+CRITÈRES CRITIQUES DE L'EXPORTATION PNG (ANTI-FLOU) :
+- Configuration de capture html2canvas : Utilise STRICTEMENT \`scale: 3\` ou \`scale: 4\` minimum pour un rendu ultra-net équivalent à 300-400 DPI.
+- INTERDICTION de filtre CSS global (\`filter: grayscale()\` ou \`blur()\` ou \`brightness()\`) sur le conteneur à capturer (les filtres ne doivent s'appliquer qu'à des micro-éléments isolés, sous peine de rendre l'image floue à l'export).
+- Le texte doit rester vectoriel et DOM HTML avant la capture.
+- Optimise la netteté des polices dans la feuille de style avec :
+  \`text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;\`
+
+IMPORTANT :
+- Le PNG doit être généré automatiquement sans perte de qualité.
+- L'utilisateur doit pouvoir choisir clairement : « Télécharger PDF » ou « Télécharger PNG (image) ».
+- Les deux formats doivent contenir exactement le même contenu.
+- Les boutons et onglets doivent disparaître de l'export ou de l'impression (\`print:hidden\` ou masqués temporairement en JS avant la capture/impression).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ONGLET 2 — CORRIGÉ INTERACTIF (TNI / CLASSE)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Cet onglet est une application dynamique, belle et colorée pour le tableau numérique interactif (TNI). 
+Il propose 3 étapes contrôlables par l'enseignant via des boutons distincts :
+1. MODE OBSERVATION : L'exercice s'affiche (en couleur), la solution finale est masquée par des "?".
+2. MODE DISCUSSION CLASSE : Tous les éléments clés (chiffres, lettres des grilles ou brouillons) deviennent interactifs ! Un clic dessus cycle l'état visuel de l'élément (état normal -> rouge & barré pour éliminer -> vert & entouré pour valider -> normal). Idéal pour rayer les hypothèses des élèves en direct.
+3. MODE RÉVÉLATION : L'explication logique de l'énigme s'affiche pas-à-pas. Les cases de la solution deviennent cliquables pour dévoiler la réponse finale.
+
+La solution mathématique doit être UNIQUE et incontestable.
+RÈGLE D'OR : Ta réponse ne doit contenir qu'un seul bloc de code \`\`\`html qui englobe toute cette application à deux onglets prête à fonctionner.`;
+        }
+
+        function triggerPromptRebuild() {
+            const output = document.getElementById('prompt-output');
+            if (output) {
+                output.value = generateMasterPrompt();
+            }
+        }
+
+        function generateAndReveal() {
+            triggerPromptRebuild();
+            const container = document.getElementById('output-box-container');
+            if (container) {
+                container.classList.remove('hidden');
+                container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function copyMasterPrompt() {
+            const output = document.getElementById('prompt-output');
+            if (output) {
+                output.select();
+                document.execCommand('copy');
+                
+                const icon = document.getElementById('btn-copy-icon');
+                const text = document.getElementById('btn-copy-text');
+                if (icon && text) {
+                    icon.setAttribute('data-lucide', 'check');
+                    text.innerText = "Requête Copiée !";
+                    if (window.lucide) window.lucide.createIcons();
+                    
+                    setTimeout(() => {
+                        icon.setAttribute('data-lucide', 'copy');
+                        text.innerText = "Copier la Requête";
+                        if (window.lucide) window.lucide.createIcons();
+                    }, 2000);
+                }
+            }
+        }
+
+        function resetAll() {
+            const fieldIds = ['act-title', 'act-week', 'act-theme-select', 'act-theme-custom', 'code-type', 'code-length', 'difficulty', 'deduction-method', 'reflection-table', 'clues-count', 'custom-details'];
+            fieldIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = "";
+            });
+            
+            const checkboxIds = ['ai-theme', 'ai-code-type', 'ai-code-length', 'ai-difficulty', 'ai-method', 'ai-reflection', 'ai-clues'];
+            checkboxIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.checked = false;
+            });
+
+            if (customThemeContainer) {
+                customThemeContainer.classList.add('hidden');
+            }
+
+            const container = document.getElementById('output-box-container');
+            if (container) {
+                container.classList.add('hidden');
+            }
+            triggerPromptRebuild();
+        }
+
+        const textInputs = ['act-title', 'act-week', 'act-theme-custom', 'custom-details'];
+        textInputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('input', triggerPromptRebuild);
+        });
+
+        const selectInputs = ['code-type', 'code-length', 'difficulty', 'deduction-method', 'reflection-table', 'clues-count'];
+        selectInputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('change', triggerPromptRebuild);
+        });
+
+        const autoCheckboxes = ['ai-theme', 'ai-code-type', 'ai-code-length', 'ai-difficulty', 'ai-method', 'ai-reflection', 'ai-clues'];
+        autoCheckboxes.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener('change', triggerPromptRebuild);
+        });
+
+        window.onload = function() {
+            triggerPromptRebuild();
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        }
+    </script>
+</body>
+</html>
